@@ -1,0 +1,37 @@
+library(caret)
+library(ggplot2)
+library(caTools)
+library(rpart)
+library(rpart.plot)
+library(dplyr)
+install.packages("tidyverse")
+library(tidyverse)
+
+covid_data <- COVID.19_Reported_Patient_Impact_and_Hospital_Capacity_by_Facility
+
+sample<- data.frame(covid_data$inpatient_beds_used_covid_7_day_sum, covid_data$hospital_pk, covid_data$city,covid_data$state, covid_data$is_metro_micro)
+
+sample$covid_data$inpatient_beds_used_covid_7_day_sum[sample$covid_data.inpatient_beds_used_covid_7_day_sum == -999999] <- 3
+
+subset(sample,covid_data$inpatient_beds_used_covid_7_day_sum is.NA)
+
+# create training set
+set.seed(88)
+split = sample.split(covid_data$inpatient_beds_used_covid_7_day_sum, SplitRatio = 0.80) 
+split
+SampleTrain = subset(sample, split==TRUE)
+SampleTest = subset(sample, split==FALSE) 
+
+# multiple variable linear regression
+lm(covid_data.inpatient_beds_used_covid_7_day_sum ~ covid_data.hospital_pk + covid_data.city +
+     covid_data.is_metro_micro + covid_data.state, data=sample)
+
+# accuracy
+SampleReg = lm(covid_data.inpatient_beds_used_covid_7_day_sum ~ covid_data.hospital_PK + covid_data.city +
+                 covid_data.is_metro_micro + covid_data.state, data=sample)
+summary(SampleReg)
+
+# margin of error
+SSE = sum((SampleTest$covid_data.inpatient_beds_used_covid_7_day_sum - lm)^2)
+SST = sum((SampleTest$covid_data.inpatient_beds_used_covid_7_day_sum - mean(Sample$covid_data.inpatient_beds_used_covid_7_day_sum))^2)
+1 - SSE/SST
